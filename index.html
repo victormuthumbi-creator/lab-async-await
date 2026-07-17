@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" defer src="index.js"></script>
-  </head>
-  <body>
-    <header> Flatbook </header>
-    <ul id = 'post-list'>
-    </ul>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Social Feed - Random Posts</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+    #post-list { list-style: none; padding: 0; }
+    #post-list li { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+    #post-list li h1 { font-size: 18px; margin: 0 0 8px; }
+    #post-list li p { margin: 0; color: #444; }
+    #error-message { color: #b00020; }
+  </style>
+</head>
+<body>
+  <button id="load-posts-btn">Load Random Posts</button>
+  <div id="error-message"></div>
+  <ul id="post-list"></ul>
+
+  <script src="index.js"></script>
+</body>
 </html>

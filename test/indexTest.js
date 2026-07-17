@@ -39,19 +39,49 @@ global.Node = dom.window.Node;
 global.Text = dom.window.Text;
 global.XMLHttpRequest = dom.window.XMLHttpRequest;
 
+// ---------------------------------------------------------
+// Helper: poll a condition until it's true, or reject after
+// a timeout. Used instead of a fixed setTimeout delay because
+// the real network fetch has a variable response time, so a
+// fixed wait is flaky by nature.
+// ---------------------------------------------------------
+function waitFor(conditionFn, { timeout = 3000, interval = 50 } = {}) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const check = () => {
+      let result;
+      try {
+        result = conditionFn();
+      } catch (err) {
+        result = false;
+      }
+      if (result) return resolve();
+      if (Date.now() - start >= timeout) {
+        return reject(new Error('waitFor: condition not met within timeout'));
+      }
+      setTimeout(check, interval);
+    };
+    check();
+  });
+}
+
 // Sample test suite for JavaScript event handling
 describe('Asynchronous Fetching ', () => {
-  it('should fetch to external api and add information to page', async() => {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-    let postDisplay = document.querySelector("#post-list")
-    expect(postDisplay.innerHTML).to.include('sunt aut')
-    
-  })
-  it('should create an h1 and p element to add', async() => {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-    let h1 = document.querySelector("h1")
-    let p = document.querySelector("p")
-    expect(h1.textContent).to.include("sunt aut facere repellat")
-    expect(p.textContent).to.include("quia et suscipit\nsuscipit")
-  })
-})
+  it('should fetch to external api and add information to page', async () => {
+    let postDisplay = document.querySelector("#post-list");
+    await waitFor(() => postDisplay.innerHTML.includes('sunt aut'));
+    expect(postDisplay.innerHTML).to.include('sunt aut');
+  });
+
+  it('should create an h1 and p element to add', async () => {
+    await waitFor(() => {
+      const h1 = document.querySelector("h1");
+      const p = document.querySelector("p");
+      return h1 && p && h1.textContent.includes("sunt aut facere repellat");
+    });
+    let h1 = document.querySelector("h1");
+    let p = document.querySelector("p");
+    expect(h1.textContent).to.include("sunt aut facere repellat");
+    expect(p.textContent).to.include("quia et suscipit\nsuscipit");
+  });
+});
